@@ -21,12 +21,12 @@ RUN set -ex && \
         openssl \
         openssh-client \
         ca-certificates && \
-    mkdir -p /usr/src/node-red /data && \
+    mkdir -p /usr/src/node-red /home/data && \
     deluser --remove-home node && \
     adduser -h /usr/src/node-red -D -H node-red -u 1000 && \
-    chown -R node-red:root /data && chmod -R g+rwX /data && \
+    chown -R node-red:root /home/data && chmod -R g+rwX /home/data && \
     chown -R node-red:root /usr/src/node-red && chmod -R g+rwX /usr/src/node-red
-    # chown -R node-red:node-red /data && \
+    # chown -R node-red:node-red /home/data && \
     # chown -R node-red:node-red /usr/src/node-red
 
 # Set work directory
@@ -38,7 +38,7 @@ RUN ./known_hosts.sh /etc/ssh/ssh_known_hosts && rm /usr/src/node-red/known_host
 
 # package.json contains Node-RED NPM module and node dependencies
 COPY package.json .
-COPY flows.json /data
+COPY flows.json /home/data
 
 #### Stage BUILD #######################################################################################################
 FROM base AS build
@@ -96,4 +96,4 @@ EXPOSE 1880
 # Add a healthcheck (default every 30 secs)
 HEALTHCHECK CMD node /healthcheck.js
 
-ENTRYPOINT ["npm", "--no-update-notifier", "--no-fund", "start", "--cache", "/data/.npm", "--", "--userDir", "/data"]
+ENTRYPOINT ["npm", "--no-update-notifier", "--no-fund", "start", "--cache", "/home/data/.npm", "--", "--userDir", "/home/data"]
